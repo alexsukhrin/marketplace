@@ -11,7 +11,8 @@
 
 (defroutes
   app-routes
-  (context "/api/v1" [])
+  (context "/api/v1" []
+    (GET "/ping" _ {:status 200 :text "pong"}))
   (not-found "<h1>404 Error!</h1>"))
 
 (def app
