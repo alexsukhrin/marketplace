@@ -39,8 +39,7 @@
   "Registration user email confirm."
   [user-id]
   (str "Thank you for registering!\n\nComplete link "
-       "http://" (System/getenv "SERVER_HOST") ":" (System/getenv "SERVER_PORT")
-       "/api/v1/auth/confirm-email?token=" user-id))
+       (System/getenv "SERVER_HOST") "/api/v1/auth/confirm-email?token=" user-id))
 
 (comment
 
