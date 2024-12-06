@@ -150,4 +150,3 @@
                :urls.primaryName "swagger"
                :operationsSorter "alpha"}})
     (ring/create-default-handler))))
-
