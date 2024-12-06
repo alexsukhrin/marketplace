@@ -118,21 +118,3 @@
   [email password]
   (db/reset-password-user {:email email
                            :password (hashers/derive password)}))
-
-(comment
-
-  (def user (new-user {:first-name "Olexandr"
-                       :last-name "Sukhryn"
-                       :email "alexandrvirtual@gmail.com"
-                       :password "password"}))
-
-  (delete "alexandrvirtual@gmail.com")
-  (insert user)
-  (def user-id "18e4bb6a-b33a-43c6-ad9a-be005d59df95")
-  (s/valid? ::user-id (parse-uuid user-id))
-  (activate user-id)
-  (def request {:headers {"authorization" "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjE0YzE5YzFkLTc4NDktNDQwYy1hZTgwLTZlNjgzMjBkODlmYSIsImVtYWlsIjoiYWxleGFuZHJ2aXJ0dWFsQGdtYWlsLmNvbSIsImV4cCI6MS43MzMyMzQ1MTU2NDVFOX0.FAPZlqelUZDJtnqHB_xBq4wNhJn0Zgpcx6svtMO709o"}})
-  (def token-jwt (extract-token request))
-  (unsign-jwt token-jwt)
-
-  :end)

@@ -31,12 +31,14 @@
                               :migration-dir "migrations"
                               :db {:dbtype "postgresql"
                                    :dbname ~(System/getenv "POSTGRES_DB")
+                                   :host ~(System/getenv "POSTGRES_HOST")
                                    :user ~(System/getenv "POSTGRES_USER")
                                    :password ~(System/getenv "POSTGRES_PASSWORD")}}}
              :test {:migratus {:store :database
                                :migration-dir "migrations"
                                :db {:dbtype "postgresql"
                                     :dbname ~(System/getenv "POSTGRES_TEST_DB")
+                                    :host ~(System/getenv "POSTGRES_HOST")
                                     :user ~(System/getenv "POSTGRES_USER")
                                     :password ~(System/getenv "POSTGRES_PASSWORD")}}
                     :dependencies [[ring/ring-mock "0.4.0"]]}
@@ -44,6 +46,7 @@
                               :migration-dir "migrations"
                               :db {:dbtype "postgresql"
                                    :dbname ~(System/getenv "POSTGRES_DEV_DB")
+                                   :host ~(System/getenv "POSTGRES_HOST")
                                    :user ~(System/getenv "POSTGRES_USER")
                                    :password ~(System/getenv "POSTGRES_PASSWORD")}}}
              :uberjar {:aot :all

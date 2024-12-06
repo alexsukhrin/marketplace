@@ -139,7 +139,6 @@
     <orderEntry type="library" name="Leiningen: ring/ring-defaults:0.4.0" level="project" />
     <orderEntry type="library" name="Leiningen: ring/ring-headers:0.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: ring/ring-json:0.5.1" level="project" />
-    <orderEntry type="library" name="Leiningen: ring/ring-mock:0.4.0" level="project" />
     <orderEntry type="library" name="Leiningen: ring/ring-ssl:0.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: tech.droit/clj-diff:1.0.1" level="project" />
     <orderEntry type="library" name="Leiningen: tigris:0.1.2" level="project" />
