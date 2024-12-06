@@ -14,7 +14,6 @@ pom.xml.asc
 .calva
 .clj-kondo
 .lsp
-<<<<<<< HEAD
 /lib/
 /classes/
 /target/
@@ -25,7 +24,5 @@ pom.xml.asc
 .lein-failures
 .nrepl-port
 .cpcache/
-=======
 env
 .idea
->>>>>>> 4dc7216 (add auth)
