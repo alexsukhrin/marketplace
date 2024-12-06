@@ -5,7 +5,7 @@
    [marketplace.routes :refer [app]]))
 
 (defn start-server []
-  (when-let [server (hk/run-server #'app {:port 4000})]
+  (when-let [server (hk/run-server #'app {:port (Integer/parseInt (or (System/getenv "SERVER_PORT") "4000"))})]
     (println "Server has started!")
     server))
 
