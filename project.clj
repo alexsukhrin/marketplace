@@ -28,12 +28,12 @@
   :main ^:skip-aot marketplace.core
   :target-path "target/%s"
   :profiles {:prod {:migratus {:store :database
-                              :migration-dir "migrations"
-                              :db {:dbtype "postgresql"
-                                   :dbname ~(System/getenv "POSTGRES_DB")
-                                   :host ~(System/getenv "POSTGRES_HOST")
-                                   :user ~(System/getenv "POSTGRES_USER")
-                                   :password ~(System/getenv "POSTGRES_PASSWORD")}}}
+                               :migration-dir "migrations"
+                               :db {:dbtype "postgresql"
+                                    :dbname ~(System/getenv "POSTGRES_DB")
+                                    :host ~(System/getenv "POSTGRES_HOST")
+                                    :user ~(System/getenv "POSTGRES_USER")
+                                    :password ~(System/getenv "POSTGRES_PASSWORD")}}}
              :test {:migratus {:store :database
                                :migration-dir "migrations"
                                :db {:dbtype "postgresql"
