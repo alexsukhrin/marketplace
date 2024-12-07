@@ -14,13 +14,16 @@
 (defn register
   "Registration new User."
   [user-data]
-  (let [user (-> user-data user/new-user user/insert)]
-    (future (-> {:to-email (:email user)
-                 :subject "Welcome!"
-                 :body (email/register (:id user))}
-                email/new-email
-                email/send))
-    user))
+  (let [{:keys [id email first_name last_name active]} (-> user-data user/new-user user/insert)
+        register-link (email/register-link id)
+        email-body (email/register-email register-link)]
+    (email/send-to email email-body)
+    {:user-id id
+     :first-name first_name
+     :last-name last_name
+     :email email
+     :active active
+     :register-link register-link}))
 
 (defn login
   "Login a user and return a JWT token."

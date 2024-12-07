@@ -8,8 +8,8 @@
    [reitit.ring.coercion :as coercion]
    [reitit.dev.pretty :as pretty]
    [reitit.ring.middleware.muuntaja :as muuntaja]
+   [reitit.ring.middleware.exception :as exception]
    [reitit.ring.middleware.parameters :as parameters]
-   [reitit.ring.spec :as spec]
    [marketplace.services :as handler]
    [marketplace.users :as user]))
 
@@ -30,9 +30,9 @@
              :swagger {:info {:title "Marketplace"
                               :description "swagger api docs"
                               :version "0.0.1"}
-                       :securityDefinitions {"auth" {:type :apiKey
-                                                     :in :header
-                                                     :name "Example-Api-Key"}}
+                       :securityDefinitions {:apiAuth {:type :apiKey
+                                                       :in :header
+                                                       :name "authorization"}}
                        :tags [{:name "auth", :description "auth api"}
                               {:name "ping", :description "health api"}]}
              :handler (swagger/create-swagger-handler)}}]
@@ -42,6 +42,7 @@
       ["/ping"
        {:tags #{"ping"}
         :get {:summary "healthcheck service"
+              :description "This route does not require authorization."
               :response {200 {:body {:message string?}}}
               :handler (fn [_] {:status 200
                                 :body {:message "pong"}})}}]
@@ -51,6 +52,7 @@
 
        ["/register"
         {:post {:summary "register user"
+                :description "This route does not require authorization."
                 :parameters {:body {:first-name ::user/first-name
                                     :last-name ::user/last-name
                                     :email ::user/email
@@ -64,22 +66,24 @@
                             :body (handler/register body)})}}]
 
        ["/login"
-        {:post {:summary "login user"
-                :parameters {:body {:email ::user/email
-                                    :password ::user/password}}
-                :response {200 {:body {:message string?
-                                       :token string?}}
-                           400 {:body {:error string?}}}
-                :handler (fn [{{:keys [body]} :parameters}]
-                           (if-let [token (handler/login body)]
-                             {:status 200
-                              :body {:message "Login successful"
-                                     :token token}}
-                             {:status 400
-                              :body {:error "Invalid email or password"}}))}}]
+        {:post {:summary     "login user"
+                :description "This route does not require authorization."
+                :parameters  {:body {:email    ::user/email
+                                     :password ::user/password}}
+                :response    {200 {:body {:message string?
+                                          :token   string?}}
+                              400 {:body {:error string?}}}
+                :handler     (fn [{{:keys [body]} :parameters}]
+                               (if-let [token (handler/login body)]
+                                 {:status 200
+                                  :body   {:message "Login successful"
+                                           :token   token}}
+                                 {:status 400
+                                  :body {:error "Invalid email or password"}}))}}]
 
        ["/logout"
         {:delete {:summary "logout user"
+                  :description "This route requires authorization."
                   :response {200 {:body {:message string?}}
                              500 {:body {:error string?}}}
                   :handler (fn [request]
@@ -88,19 +92,21 @@
                                 :body {:message "Logout successful"}}
                                {:status 500
                                 :body {:error "Failed to log out"}}))}
+         :swagger {:security [{:apiAuth []}]}
          :middleware [wrap-jwt-auth]}]
 
        ["/confirm-email"
         {:get {:summary "user confirm registration"
+               :description "This route does not require authorization."
                :parameters {:query {:token string?}}
                :response {200 {:body {:message string?}}}
                :handler (fn [{{{:keys [token]} :query} :parameters}]
-                          (println "Config email " token)
                           {:status 200
                            :body {:message (handler/confirm-email token)}})}}]
 
        ["/refresh-token"
         {:post {:summary "user refresh token"
+                :description "This route requires authorization."
                 :response {200 {:body {:message string?
                                        :token string?}}
                            400 {:body {:error string?}}}
@@ -111,10 +117,12 @@
                                      :token token}}
                              {:status 500
                               :body {:error "Failed token"}}))}
+         :swagger {:security [{:apiAuth []}]}
          :middleware [wrap-jwt-auth]}]
 
        ["/reset-password"
         {:patch {:summary "user update password"
+                 :description "This route requires authorization."
                  :parameters {:body {:email ::user/email
                                      :password ::user/password}}
                  :response {200 {:body {:message string?}}
@@ -122,10 +130,10 @@
                  :handler (fn [{{:keys [body]} :parameters}]
                             {:status 200
                              :body {:message (handler/reset-password body)}})}
+         :swagger {:security [{:apiAuth []}]}
          :middleware [wrap-jwt-auth]}]]]]
 
-    {:validate spec/validate ;; enable spec validation for route data
-     :exception pretty/exception
+    {:exception pretty/exception
      :data {:coercion reitit.coercion.spec/coercion
             :muuntaja m/instance
             :middleware [;; swagger & openapi
@@ -140,6 +148,8 @@
                          muuntaja/format-request-middleware
                            ;; coercing response bodys
                          coercion/coerce-response-middleware
+                           ;; exception handling
+                         exception/exception-middleware
                            ;; coercing request parameters
                          coercion/coerce-request-middleware]}})
    (ring/routes

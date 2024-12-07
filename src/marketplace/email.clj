@@ -35,11 +35,23 @@
                                     :subject (:subject email)
                                     :body    (:body email)}))
 
-(defn register
-  "Registration user email confirm."
+(defn register-link
   [user-id]
-  (str "Thank you for registering!\n\nComplete link "
-       (System/getenv "SERVER_HOST") "/api/v1/auth/confirm-email?token=" user-id))
+  (str "http://" (System/getenv "SERVER_HOST") "/api/v1/auth/confirm-email?token=" user-id))
+
+(defn register-email
+  "Registration user email confirm."
+  [register-link]
+  (str "Thank you for registering!\n\nComplete link " register-link))
+
+(defn send-to
+  "Sending future email."
+  [email body]
+  (-> {:to-email email
+       :subject "Welcome!"
+       :body body}
+      new-email
+      send))
 
 (comment
 
