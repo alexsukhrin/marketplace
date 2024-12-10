@@ -23,7 +23,9 @@
                  [org.clojure/tools.logging "1.3.0"]
                  [ch.qos.logback/logback-classic "1.4.11"]
                  [buddy/buddy-hashers "2.0.167"]
-                 [buddy/buddy-sign "3.5.351"]]
+                 [buddy/buddy-sign "3.5.351"]
+                 [hiccup "2.0.0-RC4"]
+                 [ring-cors "0.1.13"]]
   :plugins [[migratus-lein "0.7.3"]]
   :main ^:skip-aot marketplace.core
   :target-path "target/%s"

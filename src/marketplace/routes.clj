@@ -10,6 +10,7 @@
    [reitit.ring.middleware.muuntaja :as muuntaja]
    [reitit.ring.middleware.exception :as exception]
    [reitit.ring.middleware.parameters :as parameters]
+   [ring.middleware.cors :refer [wrap-cors]]
    [marketplace.services :as handler]
    [marketplace.users :as user]))
 
@@ -127,11 +128,25 @@
                                      :password ::user/password}}
                  :response {200 {:body {:message string?}}
                             400 {:body {:error string?}}}
-                 :handler (fn [{{:keys [body]} :parameters}]
+                 :handler (fn [request]
                             {:status 200
-                             :body {:message (handler/reset-password body)}})}
-         :swagger {:security [{:apiAuth []}]}
-         :middleware [wrap-jwt-auth]}]]]]
+                             :body {:message (handler/reset-password (:form-params request))}})}
+         :post {:summary "user create reset link"
+                :description "This route does not require authorization."
+                :parameters {:body {:email ::user/email}}
+                :response {200 {:body {:message string?}}
+                           400 {:body {:error string?}}}
+                :handler (fn [{{:keys [body]} :parameters}]
+                           {:status 200
+                            :body {:message (handler/create-reset-link body)}})}
+         :get {:summary "generate page reset password"
+               :description "This route does not require authorization."
+               :response {200 {:body string?}
+                          400 {:body {:error string?}}}
+               :handler (fn [_] {:status 200
+                                 :headers {"Content-Type" "text/html"}
+                                 :body (-> (handler/reset-password-page)
+                                           str)})}}]]]]
 
     {:exception pretty/exception
      :data {:coercion reitit.coercion.spec/coercion
@@ -144,14 +159,16 @@
                          muuntaja/format-negotiate-middleware
                            ;; encoding response body
                          muuntaja/format-response-middleware
+                           ;; exception handling
+                         exception/exception-middleware
                            ;; decoding request body
                          muuntaja/format-request-middleware
                            ;; coercing response bodys
                          coercion/coerce-response-middleware
-                           ;; exception handling
-                         exception/exception-middleware
                            ;; coercing request parameters
-                         coercion/coerce-request-middleware]}})
+                         coercion/coerce-request-middleware
+                         [wrap-cors :access-control-allow-origin [#".*"]
+                          :access-control-allow-methods [:get :put :post :patch :delete :options]]]}})
    (ring/routes
     (swagger-ui/create-swagger-ui-handler
      {:path "/"
