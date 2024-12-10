@@ -24,18 +24,25 @@
           (-> (mock/request :post "/api/v1/auth/register")
               (mock/json-body {:first-name "Alexandr"
                                :last-name "Sukhryn"
-                               :email "alexandrvirtual987@gmail.com"
+                               :email "alexandrvirtual@gmail.com"
                                :password "password"})
               router/app
               :body
               slurp
-              j/read-value)]
-      (user/delete "alexandrvirtual987@gmail.com")
-      (is (= "alexandrvirtual987@gmail.com" email))
+              j/read-value)
+
+          response
+          (-> (mock/request :post "/api/v1/auth/login")
+              (mock/json-body {:email "alexandrvirtual@gmail.com"
+                               :password "password"})
+              router/app)]
+      (is (= "alexandrvirtua@gmail.com" email))
       (is (= "Sukhryn" last-name))
       (is (= "Alexandr" first-name))
       (is (= false active))
-      (is (= (email/register-link user-id) register-link))))
+      (is (= (email/register-link user-id) register-link))
+      (is (= "" response))
+      (user/delete "alexandrvirtual987@gmail.com")))
   (mount/stop #'marketplace.db/*db*))
 
 (deftest test-register-user-fail
