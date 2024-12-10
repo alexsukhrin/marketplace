@@ -63,8 +63,7 @@
                                        :last-name ::user/last-name
                                        :email ::user/email}}}
                 :handler (fn [{{:keys [body]} :parameters}]
-                           {:status 200
-                            :body (handler/register body)})}}]
+                           (handler/register body))}}]
 
        ["/login"
         {:post {:summary     "login user"
@@ -74,13 +73,8 @@
                 :response    {200 {:body {:message string?
                                           :token   string?}}
                               400 {:body {:error string?}}}
-                :handler     (fn [{{:keys [body]} :parameters}]
-                               (if-let [token (handler/login body)]
-                                 {:status 200
-                                  :body   {:message "Login successful"
-                                           :token   token}}
-                                 {:status 400
-                                  :body {:error "Invalid email or password"}}))}}]
+                :handler     (fn [{{{:keys [email password]} :body} :parameters}]
+                               (handler/login email password))}}]
 
        ["/logout"
         {:delete {:summary "logout user"
@@ -128,25 +122,24 @@
                                      :password ::user/password}}
                  :response {200 {:body {:message string?}}
                             400 {:body {:error string?}}}
-                 :handler (fn [request]
+                 :handler (fn [{{{:keys [email password]} :body} :parameters}]
                             {:status 200
-                             :body {:message (handler/reset-password (:form-params request))}})}
+                             :body {:message (handler/reset-password email password)}})}
          :post {:summary "user create reset link"
                 :description "This route does not require authorization."
                 :parameters {:body {:email ::user/email}}
                 :response {200 {:body {:message string?}}
                            400 {:body {:error string?}}}
-                :handler (fn [{{:keys [body]} :parameters}]
+                :handler (fn [{{{:keys [email]} :body} :parameters}]
                            {:status 200
-                            :body {:message (handler/create-reset-link body)}})}
+                            :body {:message (handler/create-reset-link email)}})}
          :get {:summary "generate page reset password"
                :description "This route does not require authorization."
+               :parameters {:query {:token string?}}
                :response {200 {:body string?}
                           400 {:body {:error string?}}}
-               :handler (fn [_] {:status 200
-                                 :headers {"Content-Type" "text/html"}
-                                 :body (-> (handler/reset-password-page)
-                                           str)})}}]]]]
+               :handler (fn [{{{:keys [token]} :query} :parameters}]
+                          (handler/reset-password-page token))}}]]]]
 
     {:exception pretty/exception
      :data {:coercion reitit.coercion.spec/coercion
@@ -160,7 +153,7 @@
                            ;; encoding response body
                          muuntaja/format-response-middleware
                            ;; exception handling
-                         exception/exception-middleware
+                         ;exception/exception-middleware
                            ;; decoding request body
                          muuntaja/format-request-middleware
                            ;; coercing response bodys
