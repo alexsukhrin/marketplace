@@ -44,13 +44,6 @@
                                     :user ~(System/getenv "POSTGRES_USER")
                                     :password ~(System/getenv "POSTGRES_PASSWORD")}}
                     :dependencies [[ring/ring-mock "0.4.0"]]}
-             :dev {:migratus {:store :database
-                              :migration-dir "migrations"
-                              :db {:dbtype "postgresql"
-                                   :dbname ~(System/getenv "POSTGRES_DEV_DB")
-                                   :host ~(System/getenv "POSTGRES_HOST")
-                                   :user ~(System/getenv "POSTGRES_USER")
-                                   :password ~(System/getenv "POSTGRES_PASSWORD")}}}
              :uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"
                                   "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]}})

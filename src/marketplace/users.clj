@@ -27,8 +27,8 @@
 
 (defn new-user
   "New user."
-  [user-data]
-  (map->User (update user-data :password (fn [_] (hashers/derive (:password user-data))))))
+  [{:keys [password] :as user-data}]
+  (map->User (update user-data :password (fn [_] (hashers/derive password)))))
 
 (stest/instrument `new-user)
 
@@ -69,9 +69,9 @@
 
 (defn sign-jwt
   "Generate JWT token for User."
-  [user]
-  (jwt/sign {:id (:id user)
-             :email (:email user)
+  [{:keys [id email]}]
+  (jwt/sign {:id id
+             :email email
              :exp (-> 3600000
                       (+ (System/currentTimeMillis))
                       (/ 1000))}
@@ -84,12 +84,11 @@
 
 (defn authenticate
   "Login for User."
-  [email password]
-  (let [user (get-user email)]
-    (if (and (= email (:email user))
-             (hashers/verify password (:password user)))
-      (dissoc user :password)
-      nil)))
+  [user-email user-password]
+  (let [{:keys [email password] :as user} (get-user user-email)]
+    (when (and (= user-email email)
+               (:valid (hashers/verify user-password password)))
+      (dissoc user :password))))
 
 (def user-tokens-cache (w/fifo-cache-factory {} :ttl 3600000))
 

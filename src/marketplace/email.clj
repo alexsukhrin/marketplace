@@ -43,6 +43,11 @@
   [user-id]
   (str "http://" (System/getenv "SERVER_HOST") "/api/v1/auth/reset-password?token=" user-id))
 
+(defn reset-email
+  "Reset user password confirm."
+  [reset-link]
+  (str "Reset password!\n\nGo to link " reset-link))
+
 (defn register-email
   "Registration user email confirm."
   [register-link]
