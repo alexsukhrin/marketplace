@@ -3,6 +3,8 @@
    [buddy.hashers :as hashers]
    [buddy.sign.jwt :as jwt]
    [clojure.spec.alpha :as s]
+   [clojure.string :as str]
+   [clojure.tools.logging :as log]
    [marketplace.db :as db]
    [clojure.core.cache.wrapped :as w]
    [clojure.spec.test.alpha :as stest]))
@@ -40,6 +42,22 @@
     (catch Exception e
       (throw (ex-info "Invalid DB user data"
                       {:errors (s/explain-str ::user (str e))})))))
+
+(defn create-buyer
+  "Create new buyer."
+  [user-id]
+  (if (s/valid? ::user-id user-id)
+    (db/create-buyer {:user_id user-id})
+    (throw (ex-info "Create buyer invalid user-id"
+                    {:errors (s/explain-str ::user-id user-id)}))))
+
+(defn create-seller
+  "Create new seller."
+  [user-id]
+  (if (s/valid? ::user-id user-id)
+    (db/create-seller {:user_id user-id})
+    (throw (ex-info "Create seller invalid user-id"
+                    {:errors (s/explain-str ::user-id user-id)}))))
 
 (defn get-user
   "Get user."
@@ -117,3 +135,16 @@
   [email password]
   (db/reset-password-user {:email email
                            :password (hashers/derive password)}))
+
+(defn create-user-categories
+  [user-category-pairs]
+  (db/create-user-categories {:values user-category-pairs}))
+
+(comment
+  (def user-id "a207511b-20bd-4249-9866-adc374b4d491")
+  (def user-uuid (parse-uuid user-id))
+  (def categories {:categories [{:category-id 1}
+                                {:category-id 2}]})
+  (def user-categories (mapv #(vector user-uuid (:category-id %)) (:categories categories)))
+  (db/create-user-categories {:values user-categories})
+  :end)
