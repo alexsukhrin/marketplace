@@ -13,3 +13,15 @@ DELETE FROM users WHERE email = :email
 
 -- :name reset-password-user :? :1
 UPDATE users SET password = :password WHERE email = :email
+
+-- :name create-buyer :? :1
+INSERT INTO buyers (user_id) VALUES (:user_id)
+
+-- :name create-seller :? :1
+INSERT INTO sellers (user_id) VALUES (:user_id)
+
+-- :name get-product-categories :? :*
+SELECT category_id, name FROM categories ORDER BY name
+
+-- :name create-user-categories :? :*
+INSERT INTO user_categories (user_id, category_id) VALUES :t*:categories

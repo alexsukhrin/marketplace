@@ -34,8 +34,10 @@
                        :securityDefinitions {:apiAuth {:type :apiKey
                                                        :in :header
                                                        :name "authorization"}}
-                       :tags [{:name "auth", :description "auth api"}
-                              {:name "ping", :description "health api"}]}
+                       :tags [{:name "auth", :description "registration and authorization routes api"}
+                              {:name "users", :description "create users routes api"}
+                              {:name "products", :description "products and categories routes api"}
+                              {:name "ping", :description "health check status server api"}]}
              :handler (swagger/create-swagger-handler)}}]
 
      ["/api/v1"
@@ -139,7 +141,48 @@
                :response {200 {:body string?}
                           400 {:body {:error string?}}}
                :handler (fn [{{{:keys [token]} :query} :parameters}]
-                          (handler/reset-password-page token))}}]]]]
+                          (handler/reset-password-page token))}}]]
+
+      ["/users"
+       {:tags #{"users"}}
+
+       ["/create"
+        {:post {:summary "Create user"
+                :description "This route requires authorization."
+                :parameters {:body {:is-buyer boolean?
+                                    :is-seller boolean?}}
+                :response {201 {:body {:message string?}}
+                           400 {:body {:error string?}}}
+                :handler (fn [{:keys [user parameters]}]
+                           (let [{{:keys [is-buyer is-seller]} :body} parameters]
+                             (handler/create-user (:id user) is-buyer is-seller)))}
+         :swagger {:security [{:apiAuth []}]}
+         :middleware [wrap-jwt-auth]}]
+
+       ["/categories"
+        {:post {:summary "Create user categories"
+                :description "This route requires authorization."
+                :parameters {:body {:categories [{:category-id int?}]}}
+                :response {201 {:body {:message string?}}
+                           400 {:body {:error string?}}}
+                :handler (fn [{:keys [user parameters]}]
+                           (let [{{:keys [categories]} :body} parameters]
+                             (handler/create-user-categories (:id user) categories)))}
+         :swagger {:security [{:apiAuth []}]}
+         :middleware [wrap-jwt-auth]}]]
+
+      ["/products"
+       {:tags #{"products"}}
+
+       ["/categories"
+        {:get {:summary "Get all categories for products"
+               :description "This route requires authorization."
+               :response {200 {:body {:categories list?}}}
+               :handler (fn [_]
+                          {:status 200
+                           :body {:categories (handler/get-product-categories)}})}
+         :swagger {:security [{:apiAuth []}]}
+         :middleware [wrap-jwt-auth]}]]]]
 
     {:exception pretty/exception
      :data {:coercion reitit.coercion.spec/coercion
@@ -153,7 +196,7 @@
                            ;; encoding response body
                          muuntaja/format-response-middleware
                            ;; exception handling
-                         ;exception/exception-middleware
+                         exception/exception-middleware
                            ;; decoding request body
                          muuntaja/format-request-middleware
                            ;; coercing response bodys
@@ -170,4 +213,3 @@
                :urls.primaryName "swagger"
                :operationsSorter "alpha"}})
     (ring/create-default-handler))))
-

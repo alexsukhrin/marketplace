@@ -25,25 +25,18 @@
                  [buddy/buddy-hashers "2.0.167"]
                  [buddy/buddy-sign "3.5.351"]
                  [hiccup "2.0.0-RC4"]
-                 [ring-cors "0.1.13"]]
+                 [ring-cors "0.1.13"]
+                 [ring/ring-mock "0.4.0"]]
   :plugins [[migratus-lein "0.7.3"]]
   :main ^:skip-aot marketplace.core
   :target-path "target/%s"
-  :profiles {:prod {:migratus {:store :database
-                               :migration-dir "migrations"
-                               :db {:dbtype "postgresql"
-                                    :dbname ~(System/getenv "POSTGRES_DB")
-                                    :host ~(System/getenv "POSTGRES_HOST")
-                                    :user ~(System/getenv "POSTGRES_USER")
-                                    :password ~(System/getenv "POSTGRES_PASSWORD")}}}
-             :test {:migratus {:store :database
-                               :migration-dir "migrations"
-                               :db {:dbtype "postgresql"
-                                    :dbname ~(System/getenv "POSTGRES_TEST_DB")
-                                    :host ~(System/getenv "POSTGRES_HOST")
-                                    :user ~(System/getenv "POSTGRES_USER")
-                                    :password ~(System/getenv "POSTGRES_PASSWORD")}}
-                    :dependencies [[ring/ring-mock "0.4.0"]]}
-             :uberjar {:aot :all
+  :migratus {:store :database
+             :migration-dir "migrations"
+             :db {:dbtype "postgresql"
+                  :dbname ~(System/getenv "POSTGRES_DB")
+                  :host ~(System/getenv "POSTGRES_HOST")
+                  :user ~(System/getenv "POSTGRES_USER")
+                  :password ~(System/getenv "POSTGRES_PASSWORD")}}
+  :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"
                                   "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]}})
