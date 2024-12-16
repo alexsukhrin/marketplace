@@ -4,7 +4,8 @@
    [hiccup.page :refer [html5 include-css include-js]]
    [marketplace.users :as user]
    [marketplace.email :as email]
-   [marketplace.products :as product]))
+   [marketplace.products :as product]
+   [marketplace.s3 :as s3]))
 
 (defn confirm-email
   "Confirm Email."
@@ -195,7 +196,7 @@
 (defn get-product-categories
   "Categories for products."
   []
-  (product/get-categories))
+  (mapv s3/get-url-image (product/get-categories)))
 
 (defn create-user-categories
   "Create user categories."
@@ -208,6 +209,18 @@
      :body {:message "created"}}
     (catch Exception e
       (let [error (str "Create user categories exception " (.getMessage e))]
+        (log/error error)
+        {:status 400
+         :body {:error error}}))))
+
+(defn create-product-category
+  "Create product category."
+  [name file]
+  (try
+    {:status 201
+     :body (product/create-product-category name (s3/upload (:tempfile file)))}
+    (catch Exception e
+      (let [error (str "Create product category exception " (.getMessage e))]
         (log/error error)
         {:status 400
          :body {:error error}}))))

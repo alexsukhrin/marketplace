@@ -26,7 +26,10 @@
                  [buddy/buddy-sign "3.5.351"]
                  [hiccup "2.0.0-RC4"]
                  [ring-cors "0.1.13"]
-                 [ring/ring-mock "0.4.0"]]
+                 [ring/ring-mock "0.4.0"]
+                 [com.cognitect.aws/api "0.8.686"]
+                 [com.cognitect.aws/endpoints "1.1.12.504"]
+                 [com.cognitect.aws/s3 "868.2.1580.0"]]
   :plugins [[migratus-lein "0.7.3"]]
   :main ^:skip-aot marketplace.core
   :target-path "target/%s"
