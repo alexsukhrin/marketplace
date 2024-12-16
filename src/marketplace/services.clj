@@ -132,7 +132,6 @@
                [:body
                 [:div {:class "form-container"}
                  [:h1 "Reset Password"]
-                 [:img {:src "https://marketplace-bucket-fpryyk.s3.eu-central-1.amazonaws.com/b0748993-897b-4447-9bbb-cf7b81fba781.png" :alt "Приклад зображення"}]
                  [:form {:id "reset-password-form"}
                   [:input {:type "email" :name "email" :placeholder "Enter your email" :required true}]
                   [:input {:type "password" :name "new-password" :placeholder "Enter new password" :required true}]

@@ -1,11 +1,11 @@
 (ns marketplace.s3
   (:require
-    [cognitect.aws.client.api :as aws]
-    [clojure.java.io :as io]))
+   [cognitect.aws.client.api :as aws]
+   [clojure.java.io :as io]))
 
-(def ^:const bucket-name "marketplace-bucket-fpryyk")
+(def ^:const bucket-name (System/getenv "AWS_MARKETPLACE_BUCKET"))
 (def ^:const media "media")
-(def ^:const region "eu-central-1")
+(def ^:const region (System/getenv "AWS_REGION"))
 
 (defn client-s3 []
   (aws/client {:api :s3 :region region}))
