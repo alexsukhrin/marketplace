@@ -8,11 +8,19 @@
    [reitit.ring.coercion :as coercion]
    [reitit.dev.pretty :as pretty]
    [reitit.ring.middleware.muuntaja :as muuntaja]
+   [reitit.ring.middleware.multipart :as multipart]
    [reitit.ring.middleware.exception :as exception]
    [reitit.ring.middleware.parameters :as parameters]
+   [clojure.spec.alpha :as s]
    [ring.middleware.cors :refer [wrap-cors]]
    [marketplace.services :as handler]
    [marketplace.users :as user]))
+
+(s/def ::file multipart/temp-file-part)
+(s/def ::name string?)
+(s/def ::category-id int?)
+(s/def ::file-response (s/keys :req-un [::name ::category-id]))
+(s/def ::file-params (s/keys :req-un [::file ::name]))
 
 (defn wrap-jwt-auth [handler]
   "Middleware jwt auth user."
@@ -177,11 +185,20 @@
        ["/categories"
         {:get {:summary "Get all categories for products"
                :description "This route requires authorization."
-               :response {200 {:body {:categories list?}}}
+               :response {200 {:body {:categories [{:category_id int?
+                                                    :name string?
+                                                    :photo string?}]}}}
                :handler (fn [_]
                           {:status 200
                            :body {:categories (handler/get-product-categories)}})}
-         :swagger {:security [{:apiAuth []}]}
+         :post {:summary "Create category for product."
+                :description "This route requires authorization."
+                :parameters {:multipart ::file-params}
+                :responses {200 {:body ::file-response}}
+                :handler (fn [{{{:keys [file name]} :multipart} :parameters}]
+                           (handler/create-product-category name file))}
+         :swagger {:security [{:apiAuth []}]
+                   :produces ["image/png"]}
          :middleware [wrap-jwt-auth]}]]]]
 
     {:exception pretty/exception
@@ -203,6 +220,8 @@
                          coercion/coerce-response-middleware
                            ;; coercing request parameters
                          coercion/coerce-request-middleware
+                           ;; multipart
+                         multipart/multipart-middleware
                          [wrap-cors :access-control-allow-origin [#".*"]
                           :access-control-allow-methods [:get :put :post :patch :delete :options]]]}})
    (ring/routes

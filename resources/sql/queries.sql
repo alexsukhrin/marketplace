@@ -21,7 +21,10 @@ INSERT INTO buyers (user_id) VALUES (:user_id)
 INSERT INTO sellers (user_id) VALUES (:user_id)
 
 -- :name get-product-categories :? :*
-SELECT category_id, name FROM categories ORDER BY name
+SELECT category_id, name, photo FROM categories ORDER BY name
+
+-- :name create-product-category :? :1
+INSERT INTO categories (name, photo) VALUES (:name, :photo) RETURNING category_id, name
 
 -- :name create-user-categories :? :*
 INSERT INTO user_categories (user_id, category_id) VALUES :t*:categories

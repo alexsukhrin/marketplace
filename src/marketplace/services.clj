@@ -4,7 +4,8 @@
    [hiccup.page :refer [html5 include-css include-js]]
    [marketplace.users :as user]
    [marketplace.email :as email]
-   [marketplace.products :as product]))
+   [marketplace.products :as product]
+   [marketplace.s3 :as s3]))
 
 (defn confirm-email
   "Confirm Email."
@@ -131,6 +132,7 @@
                [:body
                 [:div {:class "form-container"}
                  [:h1 "Reset Password"]
+                 [:img {:src "https://marketplace-bucket-fpryyk.s3.eu-central-1.amazonaws.com/b0748993-897b-4447-9bbb-cf7b81fba781.png" :alt "Приклад зображення"}]
                  [:form {:id "reset-password-form"}
                   [:input {:type "email" :name "email" :placeholder "Enter your email" :required true}]
                   [:input {:type "password" :name "new-password" :placeholder "Enter new password" :required true}]
@@ -195,7 +197,7 @@
 (defn get-product-categories
   "Categories for products."
   []
-  (product/get-categories))
+  (mapv s3/get-url-image (product/get-categories)))
 
 (defn create-user-categories
   "Create user categories."
@@ -208,6 +210,18 @@
      :body {:message "created"}}
     (catch Exception e
       (let [error (str "Create user categories exception " (.getMessage e))]
+        (log/error error)
+        {:status 400
+         :body {:error error}}))))
+
+(defn create-product-category
+  "Create product category."
+  [name file]
+  (try
+    {:status 201
+     :body (product/create-product-category name (s3/upload (:tempfile file)))}
+    (catch Exception e
+      (let [error (str "Create product category exception " (.getMessage e))]
         (log/error error)
         {:status 400
          :body {:error error}}))))
