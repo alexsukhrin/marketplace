@@ -12,19 +12,9 @@
 (s/def ::user-id uuid?)
 (s/def ::first-name (s/and string? #(re-matches #"\w{3,}" %)))
 (s/def ::last-name (s/and string? #(re-matches #"\w{3,}" %)))
-(s/def ::email (s/and string? #(re-matches #".+@.+\..+" %)))
+(s/def ::email (s/and string? #(re-matches #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" %)))
 (s/def ::password (s/and string? #(>= (count %) 8)))
 (s/def ::user (s/keys :req-un [::first-name ::last-name ::email ::password]))
-
-(defn validate-user-id [user-id]
-  (when (not (s/valid? ::user-id user-id))
-    (throw (ex-info "Invalid user ID"
-                    {:errors (s/explain-str ::user-id user-id)}))))
-
-(defn validate-user-email [email]
-  (when (not (s/valid? ::email email))
-    (throw (ex-info "Invalid user email"
-                    {:errors (s/explain-str ::email email)}))))
 
 (s/fdef new-user
   :args (s/cat :user-data ::user)
@@ -54,31 +44,26 @@
 (defn create-buyer
   "Create new buyer."
   [user-id]
-  (validate-user-id user-id)
   (db/create-buyer {:user_id user-id}))
 
 (defn create-seller
   "Create new seller."
   [user-id]
-  (validate-user-id user-id)
   (db/create-seller {:user_id user-id}))
 
 (defn get-user
   "Get user."
   [email]
-  (validate-user-email email)
   (db/get-user {:email email}))
 
 (defn delete
   "Remove user."
   [email]
-  (validate-user-email email)
   (db/delete-user {:email email}))
 
 (defn activate
   "Activate registration user."
   [user-id]
-  (validate-user-id user-id)
   (db/active-user {:user-id user-id}))
 
 (def secret-key (System/getenv "SECRET_KEY"))
@@ -131,7 +116,6 @@
 (defn update-password
   "Update password User."
   [email password]
-  (validate-user-email email)
   (db/update-password-user {:email email
                             :password (hashers/derive password)}))
 
@@ -140,13 +124,11 @@
   (db/create-user-categories {:values user-category-pairs}))
 
 (defn create-otp [user-id]
-  (validate-user-id user-id)
   (db/create-otp {:user_id user-id}))
 
 (defn otp-verify
   "User verify otp."
   [user-id otp]
-  (validate-user-id user-id)
   (db/get-otp {:otp otp :user_id user-id}))
 
 (comment

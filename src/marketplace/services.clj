@@ -1,17 +1,26 @@
 (ns marketplace.services
   (:require
    [clojure.tools.logging :as log]
+   [hiccup2.core :refer [html]]
    [marketplace.users :as user]
    [marketplace.email :as email]
    [marketplace.products :as product]
    [marketplace.s3 :as s3]))
 
 (defn confirm-email
-  "Confirm Email."
   [token]
   (log/info "Confirm token: " token)
   (user/activate (parse-uuid token))
-  "complete")
+  (html
+   [:html {:lang "uk"}
+    [:head
+     [:meta {:charset "UTF-8"}]
+     [:title "Підтвердження реєстрації"]]
+    [:body
+     [:div {:style "text-align: center; margin-top: 50px;"}
+      [:h1 "Дякуємо!"]
+      [:p "Ви успішно підтвердили реєстрацію."]
+      [:p "Тепер ви можете користуватися всіма можливостями нашого сервісу."]]]]))
 
 (defn register
   "Registration new User."
@@ -95,16 +104,15 @@
 (defn create-reset-code
   "Create reset link for User."
   [email]
-  (let [user (user/get-user email)]
-    (if user
-      (let [{:keys [id]} user
-            {:keys [otp]} (user/create-otp id)]
-        (-> (email/reset-password otp)
-            (email/send-to email))
-        {:status 200
-         :body {:message otp}})
-      {:status 404
-       :body {:error "User not found."}})))
+  (if-let [user (user/get-user email)]
+    (let [{:keys [id email]} user
+          {:keys [otp]} (user/create-otp id)]
+      (->> (email/reset-password otp)
+           (email/send-to email))
+      {:status 200
+       :body {:message otp}})
+    {:status 404
+     :body {:error "User not found."}}))
 
 (defn create-user
   "Create user."

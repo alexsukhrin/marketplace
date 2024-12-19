@@ -108,7 +108,7 @@
                :response {200 {:body {:message string?}}}
                :handler (fn [{{{:keys [token]} :query} :parameters}]
                           {:status 200
-                           :body {:message (handler/confirm-email token)}})}}]
+                           :body (str (handler/confirm-email token))})}}]
 
        ["/refresh-token"
         {:post {:summary "user refresh token"
@@ -217,7 +217,7 @@
                            ;; encoding response body
                          muuntaja/format-response-middleware
                            ;; exception handling
-                         exception/exception-middleware
+                         ;;exception/exception-middleware
                            ;; decoding request body
                          muuntaja/format-request-middleware
                            ;; coercing response bodys
