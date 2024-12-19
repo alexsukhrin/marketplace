@@ -11,7 +11,7 @@ UPDATE users SET active=true WHERE id = :user-id
 -- :name delete-user :? :*
 DELETE FROM users WHERE email = :email
 
--- :name reset-password-user :? :1
+-- :name update-password-user :? :1
 UPDATE users SET password = :password WHERE email = :email
 
 -- :name create-buyer :? :1
@@ -28,3 +28,9 @@ INSERT INTO categories (name, photo) VALUES (:name, :photo) RETURNING category_i
 
 -- :name create-user-categories :? :*
 INSERT INTO user_categories (user_id, category_id) VALUES :t*:categories
+
+-- :name create-otp :? :1
+INSERT INTO otp_tokens (user_id) VALUES (:user_id) RETURNING otp
+
+-- :name get-otp :? :1
+SELECT user_id FROM otp_tokens WHERE otp = :otp AND user_id = :user_id AND expires_at >= NOW()

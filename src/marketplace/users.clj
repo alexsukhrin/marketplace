@@ -130,15 +130,29 @@
   (when-let [auth-header (get-in request [:headers "authorization"])]
     (second (re-find #"Bearer (.+)" auth-header))))
 
-(defn reset-password
-  "Reset password User."
+(defn update-password
+  "Update password User."
   [email password]
-  (db/reset-password-user {:email email
+  (db/update-password-user {:email email
                            :password (hashers/derive password)}))
 
 (defn create-user-categories
   [user-category-pairs]
   (db/create-user-categories {:values user-category-pairs}))
+
+(defn create-otp [user-id]
+  (if (s/valid? ::user-id user-id)
+    (db/create-otp {:user_id user-id})
+    (throw (ex-info "Invalid user ID"
+                    {:errors (s/explain-str ::user-id user-id)}))))
+
+(defn otp-verify
+  "User verify otp."
+  [user-id otp]
+  (if (s/valid? ::user-id user-id)
+    (db/get-otp {:otp otp :user_id user-id})
+    (throw (ex-info "Invalid user ID"
+                    {:errors (s/explain-str ::user-id user-id)}))))
 
 (comment
   (def user-id "a207511b-20bd-4249-9866-adc374b4d491")
