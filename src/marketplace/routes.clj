@@ -21,6 +21,7 @@
 (s/def ::category-id int?)
 (s/def ::file-response (s/keys :req-un [::name ::category-id]))
 (s/def ::file-params (s/keys :req-un [::file ::name]))
+(s/def ::otp (s/and string? #(>= (count %) 6)))
 
 (defn wrap-jwt-auth [handler]
   "Middleware jwt auth user."
@@ -126,30 +127,33 @@
          :middleware [wrap-jwt-auth]}]
 
        ["/reset-password"
-        {:patch {:summary "user update password"
-                 :description "This route requires authorization."
-                 :parameters {:body {:email ::user/email
-                                     :password ::user/password}}
-                 :response {200 {:body {:message string?}}
-                            400 {:body {:error string?}}}
-                 :handler (fn [{{{:keys [email password]} :body} :parameters}]
-                            {:status 200
-                             :body {:message (handler/reset-password email password)}})}
-         :post {:summary "user create reset link"
+        {:post {:summary "user create reset link"
                 :description "This route does not require authorization."
                 :parameters {:body {:email ::user/email}}
                 :response {200 {:body {:message string?}}
                            400 {:body {:error string?}}}
                 :handler (fn [{{{:keys [email]} :body} :parameters}]
-                           {:status 200
-                            :body {:message (handler/create-reset-link email)}})}
-         :get {:summary "generate page reset password"
-               :description "This route does not require authorization."
-               :parameters {:query {:token string?}}
-               :response {200 {:body string?}
-                          400 {:body {:error string?}}}
-               :handler (fn [{{{:keys [token]} :query} :parameters}]
-                          (handler/reset-password-page token))}}]]
+                           (handler/create-reset-code email))}}]
+
+       ["/otp"
+        {:post {:summary "user verify otp"
+                :description "This route does not require authorization."
+                :parameters {:body {:email ::user/email
+                                    :otp ::otp}}
+                :handler (fn [{{{:keys [email otp]} :body} :parameters}]
+                           (handler/otp-verify email otp))}}]
+
+       ["/update-password"
+        {:patch {:summary "user update password"
+                 :description "This route requires authorization."
+                 :parameters {:body {:password ::user/password}}
+                 :response {200 {:body {:message string?}}
+                            400 {:body {:error string?}}}
+                 :handler (fn [{:keys [user parameters]}]
+                            (let [{{:keys [password]} :body} parameters]
+                              (handler/update-password (:email user) password)))}
+         :swagger {:security [{:apiAuth []}]}
+         :middleware [wrap-jwt-auth]}]]
 
       ["/users"
        {:tags #{"users"}}

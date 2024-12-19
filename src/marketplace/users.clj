@@ -3,8 +3,6 @@
    [buddy.hashers :as hashers]
    [buddy.sign.jwt :as jwt]
    [clojure.spec.alpha :as s]
-   [clojure.string :as str]
-   [clojure.tools.logging :as log]
    [marketplace.db :as db]
    [clojure.core.cache.wrapped :as w]
    [clojure.spec.test.alpha :as stest]))
@@ -17,6 +15,16 @@
 (s/def ::email (s/and string? #(re-matches #".+@.+\..+" %)))
 (s/def ::password (s/and string? #(>= (count %) 8)))
 (s/def ::user (s/keys :req-un [::first-name ::last-name ::email ::password]))
+
+(defn validate-user-id [user-id]
+  (when (not (s/valid? ::user-id user-id))
+    (throw (ex-info "Invalid user ID"
+                    {:errors (s/explain-str ::user-id user-id)}))))
+
+(defn validate-user-email [email]
+  (when (not (s/valid? ::email email))
+    (throw (ex-info "Invalid user email"
+                    {:errors (s/explain-str ::email email)}))))
 
 (s/fdef new-user
   :args (s/cat :user-data ::user)
@@ -46,42 +54,32 @@
 (defn create-buyer
   "Create new buyer."
   [user-id]
-  (if (s/valid? ::user-id user-id)
-    (db/create-buyer {:user_id user-id})
-    (throw (ex-info "Create buyer invalid user-id"
-                    {:errors (s/explain-str ::user-id user-id)}))))
+  (validate-user-id user-id)
+  (db/create-buyer {:user_id user-id}))
 
 (defn create-seller
   "Create new seller."
   [user-id]
-  (if (s/valid? ::user-id user-id)
-    (db/create-seller {:user_id user-id})
-    (throw (ex-info "Create seller invalid user-id"
-                    {:errors (s/explain-str ::user-id user-id)}))))
+  (validate-user-id user-id)
+  (db/create-seller {:user_id user-id}))
 
 (defn get-user
   "Get user."
   [email]
-  (if (s/valid? ::email email)
-    (db/get-user {:email email})
-    (throw (ex-info "Invalid user email"
-                    {:errors (s/explain-str ::email email)}))))
+  (validate-user-email email)
+  (db/get-user {:email email}))
 
 (defn delete
   "Remove user."
   [email]
-  (if (s/valid? ::email email)
-    (db/delete-user {:email email})
-    (throw (ex-info "Invalid user email"
-                    {:errors (s/explain-str ::email email)}))))
+  (validate-user-email email)
+  (db/delete-user {:email email}))
 
 (defn activate
   "Activate registration user."
   [user-id]
-  (if (s/valid? ::user-id user-id)
-    (db/active-user {:user-id user-id})
-    (throw (ex-info "Invalid user ID"
-                    {:errors (s/explain-str ::user-id user-id)}))))
+  (validate-user-id user-id)
+  (db/active-user {:user-id user-id}))
 
 (def secret-key (System/getenv "SECRET_KEY"))
 
@@ -130,15 +128,26 @@
   (when-let [auth-header (get-in request [:headers "authorization"])]
     (second (re-find #"Bearer (.+)" auth-header))))
 
-(defn reset-password
-  "Reset password User."
+(defn update-password
+  "Update password User."
   [email password]
-  (db/reset-password-user {:email email
-                           :password (hashers/derive password)}))
+  (validate-user-email email)
+  (db/update-password-user {:email email
+                            :password (hashers/derive password)}))
 
 (defn create-user-categories
   [user-category-pairs]
   (db/create-user-categories {:values user-category-pairs}))
+
+(defn create-otp [user-id]
+  (validate-user-id user-id)
+  (db/create-otp {:user_id user-id}))
+
+(defn otp-verify
+  "User verify otp."
+  [user-id otp]
+  (validate-user-id user-id)
+  (db/get-otp {:otp otp :user_id user-id}))
 
 (comment
   (def user-id "a207511b-20bd-4249-9866-adc374b4d491")

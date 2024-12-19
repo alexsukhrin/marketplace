@@ -39,14 +39,10 @@
   [user-id]
   (str "http://" (System/getenv "SERVER_HOST") "/api/v1/auth/confirm-email?token=" user-id))
 
-(defn reset-link
-  [user-id]
-  (str "http://" (System/getenv "SERVER_HOST") "/api/v1/auth/reset-password?token=" user-id))
-
-(defn reset-email
+(defn reset-password
   "Reset user password confirm."
-  [reset-link]
-  (str "Reset password!\n\nGo to link " reset-link))
+  [otp]
+  (str "Reset password!\n\nOtp " otp))
 
 (defn register-email
   "Registration user email confirm."
