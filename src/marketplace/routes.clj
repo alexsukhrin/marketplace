@@ -145,13 +145,13 @@
 
        ["/update-password"
         {:patch {:summary "user update password"
-                :description "This route requires authorization."
-                :parameters {:body {:password ::user/password}}
-                :response {200 {:body {:message string?}}
-                           400 {:body {:error string?}}}
-                :handler (fn [{:keys [user parameters]}]
-                           (let [{{:keys [password]} :body} parameters]
-                             (handler/update-password (:email user) password)))}
+                 :description "This route requires authorization."
+                 :parameters {:body {:password ::user/password}}
+                 :response {200 {:body {:message string?}}
+                            400 {:body {:error string?}}}
+                 :handler (fn [{:keys [user parameters]}]
+                            (let [{{:keys [password]} :body} parameters]
+                              (handler/update-password (:email user) password)))}
          :swagger {:security [{:apiAuth []}]}
          :middleware [wrap-jwt-auth]}]]
 

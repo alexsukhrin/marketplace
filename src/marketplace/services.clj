@@ -48,19 +48,20 @@
 (defn otp-verify
   "Verify otp User."
   [email otp]
-  (if-let [{:keys [id] :as user} (user/get-user email)]
-    (if-let [otp (user/otp-verify id otp)]
-      (do
-        (log/info "Verify otp " otp)
-        (let [token (user/sign-jwt user)]
-          (user/set-token token (dissoc user :password))
-          {:status 200
-           :body   {:message "Login successful"
-                    :token   token}}))
-      {:status 403
-       :body {:error "Otp not verify"}})
-    {:status 404
-     :body {:error "User not found."}}))
+  (let [user (user/get-user email)]
+    (if (nil? user)
+      {:status 404
+       :body {:error "User not found."}}
+
+      (let [otp-valid (user/otp-verify (:id user) otp)]
+        (if otp-valid
+          (let [token (user/sign-jwt user)]
+            (user/set-token token (dissoc user :password))
+            {:status 200
+             :body   {:message "Login successful"
+                      :token   token}})
+          {:status 403
+           :body {:error "Otp not verified"}})))))
 
 (defn logout
   "API endpoint to handle user logout."
@@ -94,15 +95,16 @@
 (defn create-reset-code
   "Create reset link for User."
   [email]
-  (if-let [user (user/get-user email)]
-    (let [{:keys [id email]} user
-          {:keys [otp]} (user/create-otp id)]
-      (->> (email/reset-password otp)
-           (email/send-to email))
-      {:status 200
-       :body {:message otp}})
-    {:status 404
-     :body {:error "User not found."}}))
+  (let [user (user/get-user email)]
+    (if user
+      (let [{:keys [id]} user
+            {:keys [otp]} (user/create-otp id)]
+        (-> (email/reset-password otp)
+            (email/send-to email))
+        {:status 200
+         :body {:message otp}})
+      {:status 404
+       :body {:error "User not found."}})))
 
 (defn create-user
   "Create user."
