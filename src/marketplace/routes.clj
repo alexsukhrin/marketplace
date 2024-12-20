@@ -226,8 +226,15 @@
                          coercion/coerce-request-middleware
                            ;; multipart
                          multipart/multipart-middleware
-                         [wrap-cors :access-control-allow-origin [#".*"]
-                          :access-control-allow-methods [:get :put :post :patch :delete :options]]]}})
+                         [wrap-cors
+                          :access-control-allow-headers #{"accept"
+                                                          "accept-encoding"
+                                                          "accept-language"
+                                                          "authorization"
+                                                          "content-type"
+                                                          "origin"}
+                          :access-control-allow-origin [#"*"]
+                          :access-control-allow-methods [:delete :get :patch :post :put]]]}})
    (ring/routes
     (swagger-ui/create-swagger-ui-handler
      {:path "/"
