@@ -233,7 +233,8 @@
                                                           "authorization"
                                                           "content-type"
                                                           "origin"}
-                          :access-control-allow-origin [#"*"]
+                          :access-control-allow-origin [#".*"]
+                          :access-control-allow-credentials "true"
                           :access-control-allow-methods [:delete :get :patch :post :put]]]}})
    (ring/routes
     (swagger-ui/create-swagger-ui-handler
