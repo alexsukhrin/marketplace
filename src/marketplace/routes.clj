@@ -1,5 +1,6 @@
 (ns marketplace.routes
   (:require
+   [clojure.tools.logging :as log]
    [reitit.ring :as ring]
    [reitit.coercion.spec]
    [muuntaja.core :as m]
@@ -211,6 +212,10 @@
     {:exception pretty/exception
      :data {:coercion reitit.coercion.spec/coercion
             :muuntaja m/instance
+            :exception-handler (fn [req ex]
+                                 (log/error req)
+                                 {:status 400
+                                  :body {:error (str "Request coercion failed: " ex)}})
             :middleware [;; swagger & openapi
                          swagger/swagger-feature
                            ;; query-params & form-params

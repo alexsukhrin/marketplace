@@ -57,20 +57,19 @@
 (defn otp-verify
   "Verify otp User."
   [email otp]
-  (let [user (user/get-user email)]
-    (if (nil? user)
-      {:status 404
-       :body {:error "User not found."}}
+  (log/info "Verify otp: " otp "email: " email)
+  (if-let [user (user/get-user email)]
+    (if (user/otp-verify (:id user) otp)
+      (let [token (user/sign-jwt user)]
+        (user/set-token token (dissoc user :password))
+        {:status 200
+         :body   {:message "Login successful"
+                  :token   token}})
+      {:status 403
+       :body {:error "Otp not verified"}})
 
-      (let [otp-valid (user/otp-verify (:id user) otp)]
-        (if otp-valid
-          (let [token (user/sign-jwt user)]
-            (user/set-token token (dissoc user :password))
-            {:status 200
-             :body   {:message "Login successful"
-                      :token   token}})
-          {:status 403
-           :body {:error "Otp not verified"}})))))
+    {:status 404
+     :body {:error "User not found."}}))
 
 (defn logout
   "API endpoint to handle user logout."
