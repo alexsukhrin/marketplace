@@ -86,7 +86,7 @@
   (testing "Delete user"
     (is (= 0 (user/delete "alexandrvirtual@gmail.com")))))
 
-(deftest test-user-create-categories
+(deftest test-user-reset-password-otp
   (testing "Create user categories"
     (let [{:strs [message]} (-> (mock/request :post "/api/v1/auth/reset-password")
                                 (mock/json-body {:email "rashiki44@gmail.com"})
