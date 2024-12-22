@@ -21,7 +21,7 @@
 (s/def ::category-id int?)
 (s/def ::file-response (s/keys :req-un [::name ::category-id]))
 (s/def ::file-params (s/keys :req-un [::file ::name]))
-(s/def ::otp (s/and string? #(>= (count %) 6)))
+(s/def ::otp (s/and string? #(= (count %) 6)))
 
 (defn wrap-jwt-auth [handler]
   "Middleware jwt auth user."
