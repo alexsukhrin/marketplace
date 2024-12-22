@@ -87,7 +87,7 @@
     (is (= 0 (user/delete "alexandrvirtual@gmail.com")))))
 
 (deftest test-user-reset-password-otp
-  (testing "Create user categories"
+  (testing "Reset user password"
     (let [{:strs [message]} (-> (mock/request :post "/api/v1/auth/reset-password")
                                 (mock/json-body {:email "rashiki44@gmail.com"})
                                 router/app
