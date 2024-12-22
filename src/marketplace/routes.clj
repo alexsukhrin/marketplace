@@ -1,6 +1,6 @@
 (ns marketplace.routes
   (:require
-    [clojure.tools.logging :as log]
+   [clojure.tools.logging :as log]
    [reitit.ring :as ring]
    [reitit.coercion.spec]
    [muuntaja.core :as m]

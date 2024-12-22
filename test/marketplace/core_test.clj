@@ -89,17 +89,16 @@
 (deftest test-user-create-categories
   (testing "Create user categories"
     (let [{:strs [message]} (-> (mock/request :post "/api/v1/auth/reset-password")
-                              (mock/json-body {:email "rashiki44@gmail.com"})
-                              router/app
-                              :body
-                              slurp
-                              j/read-value)
+                                (mock/json-body {:email "rashiki44@gmail.com"})
+                                router/app
+                                :body
+                                slurp
+                                j/read-value)
           response (-> (mock/request :post "/api/v1/auth/otp")
                        (mock/json-body {:email "rashiki44@gmail.com"
                                         :otp message})
                        router/app
                        :body
                        slurp
-                       j/read-value)
-          ]
+                       j/read-value)]
       response)))
