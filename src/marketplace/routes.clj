@@ -140,6 +140,8 @@
                 :description "This route does not require authorization."
                 :parameters {:body {:email ::user/email
                                     :otp ::otp}}
+                :response {200 {:body {:message string?}}
+                           400 {:body {:error string?}}}
                 :handler (fn [{{{:keys [email otp]} :body} :parameters}]
                            (handler/otp-verify email otp))}}]
 
