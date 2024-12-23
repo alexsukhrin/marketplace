@@ -66,13 +66,13 @@
        ["/register"
         {:post {:summary "register user"
                 :description "This route does not require authorization."
-                :parameters {:body {:first-name ::user/first-name
-                                    :last-name ::user/last-name
+                :parameters {:body {:first_name ::user/first-name
+                                    :last_name ::user/last-name
                                     :email ::user/email
                                     :password ::user/password}}
-                :response {200 {:body {:user-id ::user/user-id
-                                       :first-name ::user/first-name
-                                       :last-name ::user/last-name
+                :response {200 {:body {:user_id ::user/user-id
+                                       :first_name ::user/first-name
+                                       :last_name ::user/last-name
                                        :email ::user/email}}}
                 :handler (fn [{{:keys [body]} :parameters}]
                            (handler/register body))}}]
@@ -165,8 +165,8 @@
        ["/create"
         {:post {:summary "Create user"
                 :description "This route requires authorization."
-                :parameters {:body {:is-buyer boolean?
-                                    :is-seller boolean?}}
+                :parameters {:body {:is_buyer boolean?
+                                    :is_seller boolean?}}
                 :response {201 {:body {:message string?}}
                            400 {:body {:error string?}}}
                 :handler (fn [{:keys [user parameters]}]
@@ -178,7 +178,7 @@
        ["/categories"
         {:post {:summary "Create user categories"
                 :description "This route requires authorization."
-                :parameters {:body {:categories [{:category-id int?}]}}
+                :parameters {:body {:categories [{:category_id int?}]}}
                 :response {201 {:body {:message string?}}
                            400 {:body {:error string?}}}
                 :handler (fn [{:keys [user parameters]}]

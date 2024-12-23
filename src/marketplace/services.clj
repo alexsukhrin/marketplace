@@ -31,15 +31,16 @@
           email-body (email/register-email register-link)]
       (email/send-to email email-body)
       {:status 200
-       :body {:user-id id
-              :first-name first_name
-              :last-name last_name
+       :body {:user_id id
+              :first_name first_name
+              :last_name last_name
               :email email
               :active active
-              :register-link register-link}})
+              :register_link register-link}})
     (catch Exception e
+      (log/error e)
       {:status 400
-       :body {:error (println (str "caught exception: " (.getMessage e)))}})))
+       :body {:error "User data not valid."}})))
 
 (defn login
   "Login a user and return a JWT token."
@@ -139,16 +140,15 @@
   "Create user categories."
   [user-id categories]
   (try
-    (let [values (mapv #(vector (parse-uuid user-id) (:category-id %)) categories)]
+    (let [values (mapv #(vector (parse-uuid user-id) (:category_id %)) categories)]
       (log/info "Create user categories " values)
       (user/create-user-categories values))
     {:status 201
      :body {:message "created"}}
     (catch Exception e
-      (let [error (str "Create user categories exception " (.getMessage e))]
-        (log/error error)
-        {:status 400
-         :body {:error error}}))))
+      (log/error e)
+      {:status 400
+       :body {:error "Create user categories data not valid."}})))
 
 (defn create-product-category
   "Create product category."

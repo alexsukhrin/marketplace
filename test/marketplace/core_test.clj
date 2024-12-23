@@ -19,8 +19,8 @@
   (testing "Register user"
     (let [{:strs [email last-name first-name active register-link]}
           (-> (mock/request :post "/api/v1/auth/register")
-              (mock/json-body {:first-name "Alexandr"
-                               :last-name "Sukhryn"
+              (mock/json-body {:first_name "Alexandr"
+                               :last_name "Sukhryn"
                                :email "alexandrvirtual@gmail.com"
                                :password "password"})
               router/app
@@ -58,8 +58,8 @@
 (deftest test-register-user-fail
   (testing "Register user with fail user-data"
     (let [response (-> (mock/request :post "/api/v1/auth/register")
-                       (mock/json-body {:first-name "Al"
-                                        :last-name "S"
+                       (mock/json-body {:first_name "Al"
+                                        :last_name "S"
                                         :email "alexandrvirtual987"
                                         :password "passw"})
                        router/app)]
@@ -76,8 +76,8 @@
                               j/read-value)
           response (-> (mock/request :post "/api/v1/users/category")
                        (mock/header "authorization" (str "Bearer " token))
-                       (mock/json-body {:categories [{:category-id 1}
-                                                     {:category-id 2}]})
+                       (mock/json-body {:categories [{:category_id 1}
+                                                     {:category_id 2}]})
                        router/app)]
       response)))
 ;(is (= "" response))
