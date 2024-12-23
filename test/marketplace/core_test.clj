@@ -66,13 +66,13 @@
                               slurp
                               j/read-value)
           {:strs [message]} (-> (mock/request :post "/api/v1/users/categories")
-                       (mock/header "authorization" (str "Bearer " token))
-                       (mock/json-body {:categories [{:category_id 1}
-                                                     {:category_id 2}]})
-                       router/app
-                       :body
-                       slurp
-                       j/read-value)]
+                                (mock/header "authorization" (str "Bearer " token))
+                                (mock/json-body {:categories [{:category_id 1}
+                                                              {:category_id 2}]})
+                                router/app
+                                :body
+                                slurp
+                                j/read-value)]
       (is (= "created" message)))))
 
 (deftest test-create-user
@@ -85,13 +85,13 @@
                               slurp
                               j/read-value)
           {:strs [message]} (-> (mock/request :post "/api/v1/users/create")
-                       (mock/header "authorization" (str "Bearer " token))
-                       (mock/json-body {:is_buyer true
-                                        :is_seller true})
-                       router/app
-                       :body
-                       slurp
-                       j/read-value)]
+                                (mock/header "authorization" (str "Bearer " token))
+                                (mock/json-body {:is_buyer true
+                                                 :is_seller true})
+                                router/app
+                                :body
+                                slurp
+                                j/read-value)]
       (is (= "created" message)))))
 
 (deftest test-user-reset-password-otp
@@ -105,9 +105,9 @@
           {:strs [message token]} (-> (mock/request :post "/api/v1/auth/otp")
                                       (mock/json-body {:email "alexandrvirtual@gmail.com"
                                                        :otp message})
-                       router/app
-                       :body
-                       slurp
-                       j/read-value)]
+                                      router/app
+                                      :body
+                                      slurp
+                                      j/read-value)]
       (is (= "Login successful" message))
       (is (= true (string? token))))))
