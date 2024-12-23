@@ -146,7 +146,7 @@
     {:status 201
      :body {:message "created"}}
     (catch Exception e
-      (log/error e)
+      (log/error (str "Create user category " e))
       {:status 400
        :body {:error "Create user categories data not valid."}})))
 

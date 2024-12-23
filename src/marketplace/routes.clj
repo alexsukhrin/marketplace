@@ -74,8 +74,11 @@
                                        :first_name ::user/first-name
                                        :last_name ::user/last-name
                                        :email ::user/email}}}
-                :handler (fn [{{:keys [body]} :parameters}]
-                           (handler/register body))}}]
+                :handler (fn [{{{:keys [first_name last_name email password]} :body} :parameters}]
+                           (handler/register {:first-name first_name
+                                              :last-name last_name
+                                              :email email
+                                              :password password}))}}]
 
        ["/login"
         {:post {:summary     "login user"
