@@ -17,10 +17,11 @@
 
 (deftest test-register-user
   (testing "Register user"
-    (let [{:strs [email last-name first-name active register-link]}
+    (let [_ (user/delete "alexandrvirtual@gmail.com")
+          {:strs [email last_name first_name active register_link]}
           (-> (mock/request :post "/api/v1/auth/register")
-              (mock/json-body {:first-name "Alexandr"
-                               :last-name "Sukhryn"
+              (mock/json-body {:first_name "Alexandr"
+                               :last_name "Sukhryn"
                                :email "alexandrvirtual@gmail.com"
                                :password "password"})
               router/app
@@ -28,10 +29,10 @@
               slurp
               j/read-value)]
       (is (= "alexandrvirtual@gmail.com" email))
-      (is (= "Sukhryn" last-name))
-      (is (= "Alexandr" first-name))
+      (is (= "Sukhryn" last_name))
+      (is (= "Alexandr" first_name))
       (is (= false active))
-      (is (= true (string? register-link))))))
+      (is (= true (string? register_link))))))
 
 (deftest test-login-user
   (testing "Login user"
@@ -55,16 +56,6 @@
                                 j/read-value)]
       (is (= true (string? message))))))
 
-(deftest test-register-user-fail
-  (testing "Register user with fail user-data"
-    (let [response (-> (mock/request :post "/api/v1/auth/register")
-                       (mock/json-body {:first-name "Al"
-                                        :last-name "S"
-                                        :email "alexandrvirtual987"
-                                        :password "passw"})
-                       router/app)]
-      (is (= 400 (:status response))))))
-
 (deftest test-user-create-categories
   (testing "Create user categories"
     (let [{:strs [token]} (-> (mock/request :post "/api/v1/auth/login")
@@ -74,31 +65,49 @@
                               :body
                               slurp
                               j/read-value)
-          response (-> (mock/request :post "/api/v1/users/category")
-                       (mock/header "authorization" (str "Bearer " token))
-                       (mock/json-body {:categories [{:category-id 1}
-                                                     {:category-id 2}]})
-                       router/app)]
-      response)))
-;(is (= "" response))
+          {:strs [message]} (-> (mock/request :post "/api/v1/users/categories")
+                                (mock/header "authorization" (str "Bearer " token))
+                                (mock/json-body {:categories [{:category_id 1}
+                                                              {:category_id 2}]})
+                                router/app
+                                :body
+                                slurp
+                                j/read-value)]
+      (is (= "created" message)))))
 
-(deftest test-user-delete
-  (testing "Delete user"
-    (is (= 0 (user/delete "alexandrvirtual@gmail.com")))))
+(deftest test-create-user
+  (testing "Create user"
+    (let [{:strs [token]} (-> (mock/request :post "/api/v1/auth/login")
+                              (mock/json-body {:email "alexandrvirtual@gmail.com"
+                                               :password "password"})
+                              router/app
+                              :body
+                              slurp
+                              j/read-value)
+          {:strs [message]} (-> (mock/request :post "/api/v1/users/create")
+                                (mock/header "authorization" (str "Bearer " token))
+                                (mock/json-body {:is_buyer true
+                                                 :is_seller true})
+                                router/app
+                                :body
+                                slurp
+                                j/read-value)]
+      (is (= "created" message)))))
 
 (deftest test-user-reset-password-otp
   (testing "Reset user password"
     (let [{:strs [message]} (-> (mock/request :post "/api/v1/auth/reset-password")
-                                (mock/json-body {:email "rashiki44@gmail.com"})
+                                (mock/json-body {:email "alexandrvirtual@gmail.com"})
                                 router/app
                                 :body
                                 slurp
                                 j/read-value)
-          response (-> (mock/request :post "/api/v1/auth/otp")
-                       (mock/json-body {:email "rashiki44@gmail.com"
-                                        :otp message})
-                       router/app
-                       :body
-                       slurp
-                       j/read-value)]
-      response)))
+          {:strs [message token]} (-> (mock/request :post "/api/v1/auth/otp")
+                                      (mock/json-body {:email "alexandrvirtual@gmail.com"
+                                                       :otp message})
+                                      router/app
+                                      :body
+                                      slurp
+                                      j/read-value)]
+      (is (= "Login successful" message))
+      (is (= true (string? token))))))

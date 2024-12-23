@@ -17,8 +17,14 @@ UPDATE users SET password = :password WHERE email = :email
 -- :name create-buyer :? :1
 INSERT INTO buyers (user_id) VALUES (:user_id)
 
+-- :name delete-buyer :? :1
+DELETE FROM buyers WHERE user_id = :user_id
+
 -- :name create-seller :? :1
 INSERT INTO sellers (user_id) VALUES (:user_id)
+
+-- :name delete-seller :? :1
+DELETE FROM sellers WHERE user_id = :user_id
 
 -- :name get-product-categories :? :*
 SELECT category_id, name, photo FROM categories ORDER BY name
@@ -28,6 +34,9 @@ INSERT INTO categories (name, photo) VALUES (:name, :photo) RETURNING category_i
 
 -- :name create-user-categories :? :*
 INSERT INTO user_categories (user_id, category_id) VALUES :t*:categories
+
+-- :name delete-user-categories :? :1
+DELETE FROM user_categories WHERE user_id = :user_id
 
 -- :name create-otp :? :1
 INSERT INTO otp_tokens (user_id) VALUES (:user_id) RETURNING otp

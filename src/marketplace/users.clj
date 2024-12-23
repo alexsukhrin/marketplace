@@ -44,12 +44,16 @@
 (defn create-buyer
   "Create new buyer."
   [user-id]
-  (db/create-buyer {:user_id user-id}))
+  (let [props {:user_id user-id}]
+    (db/delete-buyer props)
+    (db/create-buyer props)))
 
 (defn create-seller
   "Create new seller."
   [user-id]
-  (db/create-seller {:user_id user-id}))
+  (let [props {:user_id user-id}]
+    (db/delete-seller props)
+    (db/create-seller props)))
 
 (defn get-user
   "Get user."
@@ -121,7 +125,11 @@
 
 (defn create-user-categories
   [user-category-pairs]
-  (db/create-user-categories {:values user-category-pairs}))
+  (let [params {:categories user-category-pairs}
+        user-id (-> user-category-pairs first first)]
+    (println user-id)
+    (db/delete-user-categories {:user_id user-id})
+    (db/create-user-categories params)))
 
 (defn create-otp [user-id]
   (db/create-otp {:user_id user-id}))
