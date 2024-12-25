@@ -25,7 +25,8 @@
               {:op :PutObject
                :request {:Bucket bucket-name
                          :Key (build-key name)
-                         :Body body}}))
+                         :Body body
+                         :ContentType "image/jpeg"}}))
 
 (defn img-send-s3 [images]
   (doseq [[name img] images]
@@ -44,7 +45,7 @@
       blurp))
 
 (defn upload [f]
-  (let [name (str (random-uuid) ".png")]
+  (let [name (str (random-uuid) ".jpeg")]
     (put-img name (blurp f))
     name))
 
