@@ -52,7 +52,7 @@
 (defn get-url-image
   "Build url image."
   [record]
-  (update record :photo (fn [_] (format "https://%s.s3.%s.amazonaws.com/%s" bucket-name region (:photo record)))))
+  (update record :photo (fn [_] (format "https://%s.s3.%s.amazonaws.com/media/%s" bucket-name region (:photo record)))))
 
 (comment
 
