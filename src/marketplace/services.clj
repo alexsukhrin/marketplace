@@ -26,17 +26,15 @@
   "Registration new User."
   [user-data]
   (try
-    (let [{:keys [id email first_name last_name active]} (-> user-data user/new-user user/insert)
+    (let [{:keys [id email]} (-> user-data user/new-user user/insert)
           register-link (email/register-link id)
-          email-body (email/register-email register-link)]
+          email-body (email/register-email register-link)
+          token (user/sign-jwt {:id id :email email})]
       (email/send-to email email-body)
+      (log/info "User register to:" email)
       {:status 200
-       :body {:user_id id
-              :first_name first_name
-              :last_name last_name
-              :email email
-              :active active
-              :register_link register-link}})
+       :body {:message "Login successful"
+              :token   token}})
     (catch Exception e
       (log/error e)
       {:status 400

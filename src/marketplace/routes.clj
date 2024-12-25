@@ -70,10 +70,8 @@
                                     :last_name ::user/last-name
                                     :email ::user/email
                                     :password ::user/password}}
-                :response {200 {:body {:user_id ::user/user-id
-                                       :first_name ::user/first-name
-                                       :last_name ::user/last-name
-                                       :email ::user/email}}}
+                :response {200 {:body {:message string?
+                                       :token   string?}}}
                 :handler (fn [{{{:keys [first_name last_name email password]} :body} :parameters}]
                            (handler/register {:first-name first_name
                                               :last-name last_name

@@ -18,7 +18,7 @@
 (deftest test-register-user
   (testing "Register user"
     (let [_ (user/delete "alexandrvirtual@gmail.com")
-          {:strs [email last_name first_name active register_link]}
+          {:strs [message token]}
           (-> (mock/request :post "/api/v1/auth/register")
               (mock/json-body {:first_name "Alexandr"
                                :last_name "Sukhryn"
@@ -28,11 +28,8 @@
               :body
               slurp
               j/read-value)]
-      (is (= "alexandrvirtual@gmail.com" email))
-      (is (= "Sukhryn" last_name))
-      (is (= "Alexandr" first_name))
-      (is (= false active))
-      (is (= true (string? register_link))))))
+      (is (= true (string? token)))
+      (is (= "Login successful" message)))))
 
 (deftest test-login-user
   (testing "Login user"
