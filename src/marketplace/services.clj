@@ -30,7 +30,7 @@
           register-link (email/register-link id)
           email-body (email/register-email register-link)
           token (user/sign-jwt {:id id :email email})]
-      (email/send-to email email-body)
+      (future (email/send-to email email-body))
       (log/info "User registered with email:" email)
       {:status 200
        :body {:message "Login successful"
