@@ -56,9 +56,16 @@
 
 (comment
 
-  (def image (read-image "resources/public/img/img.png"))
+  (for [i (range 1 14)
+        :let [name (str i ".jpg")
+              image (read-image (str "resources/public/img/categories/" name))]]
+    (put-img name image))
 
-  (put-img "test1.png" image)
+  (def image (read-image "resources/public/img/categories/technicals.png"))
+
+  (def uuid (random-uuid))
+
+  (put-img "08fcace3-eeb9-49fa-a924-b0a0c145a7fc.jpg" image)
 
   (def img (get-img "test.png"))
 

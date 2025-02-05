@@ -57,9 +57,3 @@
        :body body}
       new-email
       send))
-
-(comment
-
-  (send-email "alexandrvirtual@example.com" "Welcome!" "Thank you for registering!")
-
-  :end)

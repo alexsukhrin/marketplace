@@ -32,6 +32,9 @@ SELECT category_id, name, photo FROM categories ORDER BY name
 -- :name create-product-category :? :1
 INSERT INTO categories (name, photo) VALUES (:name, :photo) RETURNING category_id, name
 
+-- :name set-photo-product-category :? :1
+UPDATE categories SET photo = :photo WHERE category_id = :category_id
+
 -- :name create-user-categories :? :*
 INSERT INTO user_categories (user_id, category_id) VALUES :t*:categories
 
