@@ -2,7 +2,7 @@ build:
 	docker build -t marketplace-image .
 
 deploy:
-	docker run --env-file=env -d -it -p 80:4000 --rm --name marketplace-app marketplace-image
+	docker run --restart=on-failure:3 --env-file=env -d -it -p 8032:4000 --name marketplace-app marketplace-image
 
 test:
 	lein test :only marketplace.core-test/test-register-user
