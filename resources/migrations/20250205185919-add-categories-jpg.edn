@@ -1,0 +1,4 @@
+{:ns marketplace.migrations.categories_photo
+ :up-fn migrate-up
+ :down-fn migrate-down
+ :transaction? true}
