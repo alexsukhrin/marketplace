@@ -207,8 +207,7 @@
                 :handler (fn [{{{:keys [file name]} :multipart} :parameters}]
                            (handler/create-product-category name file))}
          :swagger {:security [{:apiAuth []}]
-                   :produces ["image/png"]}
-         :middleware [wrap-jwt-auth]}]]]]
+                   :produces ["image/png"]}}]]]]
 
     {:exception pretty/exception
      :data {:coercion reitit.coercion.spec/coercion
