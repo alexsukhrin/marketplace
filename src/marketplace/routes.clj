@@ -192,7 +192,7 @@
        {:tags #{"products"}}
 
        ["/categories"
-        {:get {:summary "Get all categories for products"
+        {:get {:summary "Get all categories for products."
                :description "This route requires authorization."
                :response {200 {:body {:categories [{:category_id int?
                                                     :name string?
@@ -200,8 +200,8 @@
                :handler (fn [_]
                           {:status 200
                            :body {:categories (handler/get-product-categories)}})}
-         :post {:summary "Create category for product."
-                :description "This route requires authorization."
+         :post {:summary "Create category for products."
+                :description "This route does not requires authorization."
                 :parameters {:multipart ::file-params}
                 :responses {200 {:body ::file-response}}
                 :handler (fn [{{{:keys [file name]} :multipart} :parameters}]
