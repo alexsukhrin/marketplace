@@ -1,7 +1,7 @@
 (ns marketplace.migrations.categories_photo
   (:require
-    [marketplace.s3 :as s3]
-    [marketplace.db :as db]))
+   [marketplace.s3 :as s3]
+   [marketplace.db :as db]))
 
 (defn migrate-up [config]
   (println config)

@@ -10,8 +10,8 @@
 (defrecord User [first-name last-name email password])
 
 (s/def ::user-id uuid?)
-(s/def ::first-name (s/and string? #(re-matches #"\w{3,}" %)))
-(s/def ::last-name (s/and string? #(re-matches #"\w{3,}" %)))
+(s/def ::first-name (s/and string? #(re-matches #"[\p{L}]{3,}" %)))
+(s/def ::last-name (s/and string? #(re-matches #"[\p{L}]{3,}" %)))
 (s/def ::email (s/and string? #(re-matches #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" %)))
 (s/def ::password (s/and string? #(>= (count %) 8)))
 (s/def ::user (s/keys :req-un [::first-name ::last-name ::email ::password]))
