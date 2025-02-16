@@ -29,7 +29,26 @@
               slurp
               j/read-value)]
       (is (= true (string? token)))
-      (is (= "Login successful" message)))))
+      (is (= "Login successful" message))))
+
+  (testing "Register user with ua words"
+    (let [_ (user/delete "testerm1@urk.net")
+          {:strs [message token]}
+          (-> (mock/request :post "/api/v1/auth/register")
+              (mock/json-body {:first_name "Василь"
+                               :last_name "Васильській"
+                               :email "testerm1@urk.net"
+                               :password "8kz7cahpCCiJQAP!"})
+              router/app
+              :body
+              slurp
+              j/read-value)]
+      (is (= true (string? token)))
+      (is (= "Login successful" message))
+      (is (= (-> (user/delete "testerm1@urk.net")
+                 first
+                 :next.jdbc/update-count)
+             1)))))
 
 (deftest test-login-user
   (testing "Login user"
